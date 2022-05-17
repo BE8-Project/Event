@@ -29,7 +29,7 @@ func (u *userController) Register() echo.HandlerFunc {
 		var request request.InsertUser
 
 		if err := c.Bind(&request); err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest())
+			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
 
 		if err := u.Validate.Struct(request); err != nil {
@@ -59,7 +59,7 @@ func (u *userController) Login() echo.HandlerFunc {
 		var request request.Login
 
 		if err := c.Bind(&request); err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest())
+			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
 
 		if err := u.Validate.Struct(request); err != nil {
@@ -102,7 +102,7 @@ func (u *userController) Update() echo.HandlerFunc {
 
 		var request request.UpdateUser
 		if err := c.Bind(&request); err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest())
+			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
 
 		user := entity.User{

@@ -9,18 +9,18 @@ import (
 type User struct {
 	gorm.Model
 	Name     string `gorm:"type:varchar(35);not null"`
-	Username string `gorm:"type:varchar(35);not null;unique"`
+	Username string `gorm:"primarykey;type:varchar(35);not null;unique"`
 	Email    string `gorm:"type:varchar(100);not null;unique"`
 	HP       string `gorm:"type:varchar(20);not null;unique"`
 	Password string `gorm:"type:varchar(255);not null"`
 	Role     int    `gorm:"type:int;not null"`
-	Events 	[]Event `gorm:"foreignkey:Username"`
+	Events 	[]Event `gorm:"foreignKey:Username;references:Username"`
 }
 
 type Category struct {
 	gorm.Model
 	Name string
-	Events 	[]Event `gorm:"foreignkey:CategoryID"`
+	Events 	[]Event `gorm:"foreignKey:CategoryID"`
 }
 
 type Event struct {
