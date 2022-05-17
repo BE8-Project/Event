@@ -13,14 +13,14 @@ import (
 )
 
 type eventController struct {
-	Connect repository.EventModel
+	Connect  repository.EventModel
 	Validate *validator.Validate
 }
 
 func NewEventController(repo repository.EventModel, valid *validator.Validate) *eventController {
 	return &eventController{
-		Connect: repo,
-		Validate : valid,
+		Connect:  repo,
+		Validate: valid,
 	}
 }
 
@@ -38,14 +38,14 @@ func (c *eventController) Insert() echo.HandlerFunc {
 		}
 
 		event := entity.Event{
-			Name: request.Name,
-			HostedBy: request.HostedBy,
-			Date: request.Date,
-			Location: request.Location,
-			Details: request.Details,
-			Ticket: request.Ticket,
+			Name:       request.Name,
+			HostedBy:   request.HostedBy,
+			Date:       request.Date,
+			Location:   request.Location,
+			Details:    request.Details,
+			Ticket:     request.Ticket,
 			CategoryID: request.CategoryID,
-			Username: username,
+			Username:   username,
 		}
 
 		result := c.Connect.Insert(&event)
