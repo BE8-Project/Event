@@ -6,7 +6,6 @@ import (
 	"event/delivery/middlewares"
 	"event/entity"
 	repository "event/repository/event"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -15,20 +14,20 @@ import (
 )
 
 type eventController struct {
-	Connect repository.EventModel
+	Connect  repository.EventModel
 	Validate *validator.Validate
 }
 
 func NewEventController(repo repository.EventModel, valid *validator.Validate) *eventController {
 	return &eventController{
-		Connect: repo,
-		Validate : valid,
+		Connect:  repo,
+		Validate: valid,
 	}
 }
 
 func (c *eventController) Insert() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		username := middlewares.ExtractTokenUsername(ctx)
+		UserID := middlewares.ExtractTokenUserId(ctx)
 		var request request.InsertEvent
 
 		if err := ctx.Bind(&request); err != nil {
@@ -40,30 +39,41 @@ func (c *eventController) Insert() echo.HandlerFunc {
 		}
 
 		layout := "2006-01-02T15:04"
-		str := request.Date
-		convert, err := time.Parse(layout, str)
-
-		fmt.Println(layout)
-		fmt.Println(str)
-		fmt.Println(username)
+		strStart := request.DateStart
+		strEnd := request.DateEnd
+		convertStart, err := time.Parse(layout, strStart)
+		convertEnd, err := time.Parse(layout, strEnd)
 
 		if err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date salah"))
 		}
 
 		event := entity.Event{
-			Name: request.Name,
-			HostedBy: request.HostedBy,
-			Date: convert,
-			Location: request.Location,
-			Details: request.Details,
-			Ticket: request.Ticket,
+			Name:       request.Name,
+			HostedBy:   request.HostedBy,
+			DateStart:  convertStart,
+			DateEnd:    convertEnd,
+			Location:   request.Location,
+			Details:    request.Details,
+			Ticket:     request.Ticket,
 			CategoryID: request.CategoryID,
-			Username: username,
+			UserID:     uint(UserID),
 		}
 
 		result := c.Connect.Insert(&event)
 
 		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil membuat Event!", result))
+	}
+}
+
+func (c *eventController) GetAll() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		results := c.Connect.GetAll()
+
+		if len(results) == 0 {
+			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
+		}
+		
+		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil mengambil semua Event!", results))
 	}
 }

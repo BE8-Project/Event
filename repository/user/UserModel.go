@@ -57,7 +57,6 @@ func (u *userModel) Login(custom []string, password string) (response.Login, err
 			return response.Login{
 				ID:       user.ID,
 				Name:     user.Name,
-				Username: user.Username,
 			}, nil
 		} else {
 			return response.Login{}, errors.New("user or password is wrong")
@@ -65,19 +64,19 @@ func (u *userModel) Login(custom []string, password string) (response.Login, err
 	}
 }
 
-func (u *userModel) GetOne(username string) response.User {
+func (u *userModel) GetOne(user_id uint) response.User {
 
 	var user response.User
-	if err := u.DB.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := u.DB.Where("id = ?", user_id).First(&user).Error; err != nil {
 		log.Warn(err)
 		return response.User{}
 	}
 	return user
 }
 
-func (u *userModel) Delete(username string) response.DeleteUser {
+func (u *userModel) Delete(user_id uint) response.DeleteUser {
 	var user entity.User
-	if err := u.DB.Where("username = ?", username).Delete(&user).Error; err != nil {
+	if err := u.DB.Where("id = ?", user_id).Delete(&user).Error; err != nil {
 		log.Warn(err)
 		return response.DeleteUser{}
 	}
@@ -88,9 +87,9 @@ func (u *userModel) Delete(username string) response.DeleteUser {
 	}
 }
 
-func (u *userModel) Update(newUser *entity.User, username string) (response.UpdateUser, error) {
+func (u *userModel) Update(newUser *entity.User, user_id uint) (response.UpdateUser, error) {
 	var user entity.User
-	if err := u.DB.Model(&user).Where("username = ?", username).Updates(newUser).Error; err != nil {
+	if err := u.DB.Model(&user).Where("id = ?", user_id).Updates(newUser).Error; err != nil {
 		log.Warn(err)
 		return response.UpdateUser{}, err
 	}

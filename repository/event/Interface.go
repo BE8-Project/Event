@@ -7,4 +7,5 @@ import (
 
 type EventModel interface {
 	Insert(task *entity.Event) response.InsertEvent
+	GetAll() []response.GetEvent
 }

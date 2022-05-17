@@ -2,10 +2,12 @@ package main
 
 import (
 	"event/config"
+	"event/delivery/controllers/category"
 	"event/delivery/controllers/event"
 	"event/delivery/controllers/user"
 	"event/delivery/middlewares"
 	"event/delivery/routes"
+	categModel "event/repository/category"
 	eventModel "event/repository/event"
 	userModel "event/repository/user"
 	"fmt"
@@ -24,8 +26,12 @@ func main() {
 	userModel := userModel.NewUserModel(db)
 	userController := user.NewUserController(userModel)
 
+	categModel := categModel.NewCategotyModel(db)
+	categController := category.NewEventController(categModel)
+
 	middlewares.General(e)
-	routes.Route(e, userController)
+	routes.UsersPath(e, userController)
+	routes.CategoryPath(e, categController)
 	routes.EventPath(e, event.NewEventController(eventModel.NewEventModel(db), validator.New()))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", conf.Port)))

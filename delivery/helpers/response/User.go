@@ -17,12 +17,7 @@ type User struct {
 type Login struct {
 	ID       uint   `json:"id"`
 	Name     string `json:"name"`
-	Username string `json:"username"`
-}
-
-type LoginDetail struct {
-	User  Login  `json:"user"`
-	Token string `json:"token"`
+	Token 	 string `json:"token"`
 }
 
 type UpdateUser struct {

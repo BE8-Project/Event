@@ -8,7 +8,7 @@ import (
 type UserModel interface {
 	Insert(user *entity.User) (response.User, error)
 	Login(custom []string, password string) (response.Login, error)
-	GetOne(username string) response.User
-	Delete(username string) response.DeleteUser
-	Update(newUser *entity.User, username string) (response.UpdateUser, error)
+	GetOne(user_id uint) response.User
+	Delete(user_id uint) response.DeleteUser
+	Update(newUser *entity.User, user_id uint) (response.UpdateUser, error)
 }

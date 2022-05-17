@@ -25,3 +25,23 @@ func (m *eventModel) Insert(task *entity.Event) response.InsertEvent {
 		CreatedAt: task.CreatedAt,
 	}
 }
+
+func (m *eventModel) GetAll() []response.GetEvent {
+	var tasks []entity.Event
+	m.DB.Find(&tasks)
+
+	var results []response.GetEvent
+	for _, result := range tasks {
+		results = append(results, response.GetEvent{
+			Name : result.Name,
+			HostedBy: result.HostedBy,
+			DateStart: result.DateStart,
+			DateEnd: result.DateEnd,
+			Location: result.Location,
+			Details: result.Details,
+			Ticket: result.Ticket,
+		})
+	}
+
+	return results
+}
