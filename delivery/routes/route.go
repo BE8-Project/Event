@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"event/delivery/controllers/event"
 	"event/delivery/controllers/user"
 
 	"github.com/labstack/echo/v4"
@@ -8,12 +9,6 @@ import (
 )
 
 func Route(e *echo.Echo, connUser user.UserController) {
-	e.Pre(middleware.RemoveTrailingSlash())
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: "time:${time_rfc3339}, method=${method}, uri=${uri}, status=${status}\n",
-	}))
-	e.Use(middleware.CORS())
-
 	e.POST("/register", connUser.Register())
 	e.POST("/login", connUser.Login())
 
@@ -21,4 +16,9 @@ func Route(e *echo.Echo, connUser user.UserController) {
 	customer.GET("/:username", connUser.GetUser)
 	customer.PUT("/:username", connUser.Update())
 	customer.DELETE("/:username", connUser.Delete())
+}
+
+func EventPath(e *echo.Echo, connect event.EventController) {
+	event := e.Group("/events", middleware.JWT([]byte("$p4ssw0rd")))
+	event.POST("", connect.Insert())
 }

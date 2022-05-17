@@ -1,6 +1,10 @@
 package entity
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
 	gorm.Model
@@ -10,4 +14,23 @@ type User struct {
 	HP       string `gorm:"type:varchar(20);not null;unique"`
 	Password string `gorm:"type:varchar(255);not null"`
 	Role     int    `gorm:"type:int;not null"`
+	Events 	[]Event `gorm:"foreignkey:Username"`
+}
+
+type Category struct {
+	gorm.Model
+	Name string
+	Events 	[]Event `gorm:"foreignkey:CategoryID"`
+}
+
+type Event struct {
+	gorm.Model
+	Name	string
+	HostedBy string
+	Date time.Time
+	Location string
+	Details string
+	Ticket	int
+	Username string
+	CategoryID uint
 }

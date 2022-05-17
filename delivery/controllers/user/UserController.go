@@ -3,7 +3,7 @@ package user
 import (
 	"event/delivery/helpers/request"
 	"event/delivery/helpers/response"
-	middlewares "event/delivery/middleware"
+	"event/delivery/middlewares"
 	"event/entity"
 	repoUser "event/repository/user"
 	"net/http"
