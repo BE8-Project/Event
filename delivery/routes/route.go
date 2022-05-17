@@ -9,23 +9,28 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func UsersPath(e *echo.Echo, connUser user.UserController, connCateg category.CategoruController) {
+func UsersPath(e *echo.Echo, connUser user.UserController) {
 	e.POST("/register", connUser.Register())
 	e.POST("/admin", connUser.Admin())
 	e.POST("/login", connUser.Login())
-	e.GET("/category", connCateg.GetAll())
+	
+	customer := e.Group("/users", middleware.JWT([]byte("$p4ssw0rd")))
+	customer.GET("/profile", connUser.GetUser())
+	customer.PUT("/profile", connUser.Update())
+	customer.DELETE("/profile", connUser.Delete())
+}
 
-	customer := e.Group("/users", middleware.JWTWithConfig(middleware.JWTConfig{SigningKey: []byte("$p4ssw0rd")}))
-	customer.GET("/:username", connUser.GetUser)
-	customer.PUT("/:username", connUser.Update())
-	customer.DELETE("/:username", connUser.Delete())
+func CategoryPath(e *echo.Echo, category category.CategoryController) {
+	e.GET("/categories", category.GetAll())
 
-	event := e.Group("/categories", middleware.JWTWithConfig(middleware.JWTConfig{SigningKey: []byte("$p4ssw0rd")}))
-	event.POST("", connCateg.Insert())
-	event.DELETE("/:id", connCateg.Delete())
+	categories := e.Group("/admin/categories", middleware.JWT([]byte("$p4ssw0rd")))
+	categories.POST("", category.Insert())
+	categories.DELETE("/:id", category.Delete())
 }
 
 func EventPath(e *echo.Echo, connect event.EventController) {
-	event := e.Group("/events", middleware.JWT([]byte("$p4ssw0rd")))
+	e.GET("/events", connect.GetAll())
+
+	event := e.Group("/admin/events", middleware.JWTWithConfig(middleware.JWTConfig{SigningKey: []byte("$p4ssw0rd")}))
 	event.POST("", connect.Insert())
 }

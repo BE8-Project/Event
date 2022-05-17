@@ -65,3 +65,15 @@ func (c *eventController) Insert() echo.HandlerFunc {
 		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil membuat Event!", result))
 	}
 }
+
+func (c *eventController) GetAll() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		results := c.Connect.GetAll()
+
+		if len(results) == 0 {
+			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
+		}
+		
+		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil mengambil semua Event!", results))
+	}
+}

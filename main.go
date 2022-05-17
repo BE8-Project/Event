@@ -30,7 +30,8 @@ func main() {
 	categController := category.NewEventController(categModel)
 
 	middlewares.General(e)
-	routes.UsersPath(e, userController, categController)
+	routes.UsersPath(e, userController)
+	routes.CategoryPath(e, categController)
 	routes.EventPath(e, event.NewEventController(eventModel.NewEventModel(db), validator.New()))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", conf.Port)))

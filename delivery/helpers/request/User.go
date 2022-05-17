@@ -6,7 +6,6 @@ type InsertUser struct {
 	Email    string `json:"email" validate:"required"`
 	HP       string `json:"hp" validate:"required"`
 	Password string `json:"password" validate:"required"`
-	Role     int    `json:"role" validate:"required"`
 }
 
 type UpdateUser struct {
