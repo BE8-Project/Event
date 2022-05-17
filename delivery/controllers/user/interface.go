@@ -8,4 +8,5 @@ type UserController interface {
 	GetUser(c echo.Context) error
 	Delete() echo.HandlerFunc
 	Update() echo.HandlerFunc
+	Admin() echo.HandlerFunc
 }

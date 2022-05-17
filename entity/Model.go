@@ -14,7 +14,7 @@ type User struct {
 	HP       string  `gorm:"type:varchar(20);not null;unique"`
 	Password string  `gorm:"type:varchar(255);not null"`
 	Role     int     `gorm:"type:int;not null"`
-	Events   []Event `gorm:"foreignkey:Username;references:Username"`
+	Events   []Event `gorm:"foreignkey:UserID"`
 }
 
 type Category struct {
@@ -27,10 +27,11 @@ type Event struct {
 	gorm.Model
 	Name       string
 	HostedBy   string
-	Date       time.Time
+	DateStart  time.Time
+	DateEnd    time.Time
 	Location   string
 	Details    string
 	Ticket     int
-	Username   string
+	UserID     uint
 	CategoryID uint
 }

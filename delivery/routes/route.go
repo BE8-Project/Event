@@ -11,6 +11,7 @@ import (
 
 func UsersPath(e *echo.Echo, connUser user.UserController, connCateg category.CategoruController) {
 	e.POST("/register", connUser.Register())
+	e.POST("/admin", connUser.Admin())
 	e.POST("/login", connUser.Login())
 	e.GET("/category", connCateg.GetAll())
 

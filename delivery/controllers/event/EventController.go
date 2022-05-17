@@ -7,6 +7,7 @@ import (
 	"event/entity"
 	repository "event/repository/event"
 	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -26,30 +27,41 @@ func NewEventController(repo repository.EventModel, valid *validator.Validate) *
 
 func (c *eventController) Insert() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		username := middlewares.ExtractTokenUsername(ctx)
+		UserID := middlewares.ExtractTokenUserId(ctx)
 		var request request.InsertEvent
 
 		if err := ctx.Bind(&request); err != nil {
-			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest())
+			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
 
 		if err := c.Validate.Struct(request); err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusBadRequest(err))
 		}
 
+		layout := "2006-01-02T15:04"
+		strStart := request.DateStart
+		strEnd := request.DateEnd
+		convertStart, err := time.Parse(layout, strStart)
+		convertEnd, err := time.Parse(layout, strEnd)
+
+		if err != nil {
+			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date salah"))
+		}
+
 		event := entity.Event{
 			Name:       request.Name,
 			HostedBy:   request.HostedBy,
-			Date:       request.Date,
+			DateStart:  convertStart,
+			DateEnd:    convertEnd,
 			Location:   request.Location,
 			Details:    request.Details,
 			Ticket:     request.Ticket,
 			CategoryID: request.CategoryID,
-			Username:   username,
+			UserID:     uint(UserID),
 		}
 
 		result := c.Connect.Insert(&event)
 
-		return ctx.JSON(http.StatusCreated, response.StatusCreated("Created", result))
+		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil membuat Event!", result))
 	}
 }

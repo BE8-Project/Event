@@ -7,10 +7,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func StatusInvalidRequest() map[string]interface{} {
+func StatusInvalidRequest(message string) map[string]interface{} {
 	return map[string]interface{}{
 		"code":    http.StatusBadRequest,
-		"message": "invalid request",
+		"message": message,
 		"data":    nil,
 	}
 }

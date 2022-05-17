@@ -29,7 +29,7 @@ func (u *userController) Register() echo.HandlerFunc {
 		var request request.InsertUser
 
 		if err := c.Bind(&request); err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest())
+			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
 
 		if err := u.Validate.Struct(request); err != nil {
@@ -42,7 +42,36 @@ func (u *userController) Register() echo.HandlerFunc {
 			Email:    request.Email,
 			HP:       request.HP,
 			Password: request.Password,
-			Role:     request.Role,
+			Role:     2,
+		}
+
+		result, err := u.Connect.Insert(&user)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(err))
+		}
+
+		return c.JSON(http.StatusCreated, response.StatusCreated("success register User!", result))
+	}
+}
+func (u *userController) Admin() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var request request.InsertUser
+
+		if err := c.Bind(&request); err != nil {
+			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
+		}
+
+		if err := u.Validate.Struct(request); err != nil {
+			return c.JSON(http.StatusBadRequest, response.StatusBadRequest(err))
+		}
+
+		user := entity.User{
+			Name:     request.Name,
+			Username: request.Username,
+			Email:    request.Email,
+			HP:       request.HP,
+			Password: request.Password,
+			Role:     1,
 		}
 
 		result, err := u.Connect.Insert(&user)
@@ -59,7 +88,7 @@ func (u *userController) Login() echo.HandlerFunc {
 		var request request.Login
 
 		if err := c.Bind(&request); err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest())
+			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
 
 		if err := u.Validate.Struct(request); err != nil {
@@ -102,7 +131,7 @@ func (u *userController) Update() echo.HandlerFunc {
 
 		var request request.UpdateUser
 		if err := c.Bind(&request); err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest())
+			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
 
 		user := entity.User{

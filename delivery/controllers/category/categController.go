@@ -30,7 +30,7 @@ func (cc *categController) Insert() echo.HandlerFunc {
 
 		var request request.InsertCateg
 		if err := c.Bind(&request); err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest())
+			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest(""))
 		}
 
 		if err := cc.Validate.Struct(request); err != nil {
