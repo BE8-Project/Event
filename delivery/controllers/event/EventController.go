@@ -154,3 +154,17 @@ func (c *eventController) Update() echo.HandlerFunc {
 		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengupdate Event!", result))
 	}
 }
+
+func (c *eventController) Delete() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user_id := uint(middlewares.ExtractTokenUserId(ctx))
+		id, _ := strconv.Atoi(ctx.Param("id"))
+
+		result, err := c.Connect.Delete(uint(id), user_id)
+		if err != nil {
+			return ctx.JSON(http.StatusForbidden, response.StatusForbidden(err.Error()))
+		}
+
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil menghapus Event!", result))
+	}
+}

@@ -7,4 +7,5 @@ type EventController interface {
 	GetAll() echo.HandlerFunc
 	Get() echo.HandlerFunc
 	Update() echo.HandlerFunc
+	Delete() echo.HandlerFunc
 }

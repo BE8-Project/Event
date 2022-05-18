@@ -86,3 +86,18 @@ func (m *eventModel) Update(id, user_id uint, task *entity.Event) (response.Upda
 		}, nil
 	}
 }
+
+func (m *eventModel) Delete(id, user_id uint) (response.DeleteEvent, error) {
+	var task entity.Event
+	record := m.DB.Where("id = ? AND user_id = ?", id, user_id).First(&task)
+
+	if record.RowsAffected == 0 {
+		return response.DeleteEvent{}, errors.New("you are not allowed to access this resource")
+	} else {
+		m.DB.Delete(&task)
+		return response.DeleteEvent{
+			Name: 	task.Name,
+			DeletedAt: task.DeletedAt,
+		}, nil
+	}
+}

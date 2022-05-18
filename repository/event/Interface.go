@@ -10,4 +10,5 @@ type EventModel interface {
 	GetAll() []response.GetEvent
 	Get(id uint) (response.GetEvent, error)
 	Update(id, user_id uint, task *entity.Event) (response.UpdateEvent, error)
+	Delete(id, user_id uint) (response.DeleteEvent, error)
 }

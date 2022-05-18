@@ -35,4 +35,5 @@ func EventPath(e *echo.Echo, connect event.EventController) {
 	event := e.Group("/admin/events", middleware.JWTWithConfig(middleware.JWTConfig{SigningKey: []byte("$p4ssw0rd")}))
 	event.POST("", connect.Insert())
 	event.PUT("/:id", connect.Update())
+	event.DELETE("/:id", connect.Delete())
 }

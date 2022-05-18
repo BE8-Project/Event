@@ -1,6 +1,10 @@
 package response
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type InsertEvent struct {
 	Name      string `json:"name"`
@@ -20,4 +24,9 @@ type GetEvent struct {
 type UpdateEvent struct {
 	Name      string `json:"name"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type DeleteEvent struct {
+	Name      string `json:"name"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }
