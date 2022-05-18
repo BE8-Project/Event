@@ -28,8 +28,10 @@ func NewEventController(repo repository.EventModel, valid *validator.Validate) *
 
 func (c *eventController) Insert() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		UserID := middlewares.ExtractTokenUserId(ctx)
+		user_id := uint(middlewares.ExtractTokenUserId(ctx))
 		var request request.InsertEvent
+		start, end := request.DateStart, request.DateEnd
+		layout := "2006-01-02T15:04"
 
 		if err := ctx.Bind(&request); err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
@@ -39,8 +41,6 @@ func (c *eventController) Insert() echo.HandlerFunc {
 			return ctx.JSON(http.StatusBadRequest, response.StatusBadRequest(err))
 		}
 
-		layout := "2006-01-02T15:04"
-		start, end := request.DateStart, request.DateEnd
 		convertStart, err := time.Parse(layout, start)
 
 		if err != nil {
@@ -62,7 +62,7 @@ func (c *eventController) Insert() echo.HandlerFunc {
 			Details:    request.Details,
 			Ticket:     request.Ticket,
 			CategoryID: request.CategoryID,
-			UserID:     uint(UserID),
+			UserID:     user_id,
 		}
 
 		result := c.Connect.Insert(&event)
@@ -93,6 +93,7 @@ func (c *eventController) Get() echo.HandlerFunc {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 		
 		result, err := c.Connect.Get(uint(id))
+		
 		if err != nil {
 			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
 		}
@@ -103,17 +104,17 @@ func (c *eventController) Get() echo.HandlerFunc {
 
 func (c *eventController) Update() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		var event entity.Event
+		var request request.UpdateEvent
+		var requestStart, requestEnd time.Time
+		start, end := request.DateStart, request.DateEnd
 		user_id := uint(middlewares.ExtractTokenUserId(ctx))
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		var request request.UpdateEvent
-
+		
 		if err := ctx.Bind(&request); err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
 
-		var event entity.Event
-		var requestStart, requestEnd time.Time
-		start, end := request.DateStart, request.DateEnd
 		if request.DateStart != "" && request.DateEnd != "" {
 			layout := "2006-01-02T15:04"
 			
@@ -144,6 +145,7 @@ func (c *eventController) Update() echo.HandlerFunc {
 		}
 
 		result, err := c.Connect.Update(uint(id), user_id, &event)
+		
 		if err != nil {
 			if err.Error() == "required" {
 				return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tidak ada field yang dimasukkan"))
@@ -162,6 +164,7 @@ func (c *eventController) Delete() echo.HandlerFunc {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 
 		result, err := c.Connect.Delete(uint(id), user_id)
+		
 		if err != nil {
 			return ctx.JSON(http.StatusForbidden, response.StatusForbidden(err.Error()))
 		}

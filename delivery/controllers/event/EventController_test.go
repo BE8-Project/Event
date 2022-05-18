@@ -362,7 +362,7 @@ func TestUpdate(t *testing.T) {
 			"name": 1,
 		})
 
-		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(string(requestBody)))
+		req := httptest.NewRequest(http.MethodPut, "/", strings.NewReader(string(requestBody)))
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		req.Header.Set("Authorization", "Bearer "+token)
 
@@ -393,7 +393,7 @@ func TestUpdate(t *testing.T) {
 			"name": "",
 		})
 
-		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(string(requestBody)))
+		req := httptest.NewRequest(http.MethodPut, "/", strings.NewReader(string(requestBody)))
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		req.Header.Set("Authorization", "Bearer "+token)
 
@@ -424,7 +424,7 @@ func TestUpdate(t *testing.T) {
 		requestBody, _ := json.Marshal(map[string]interface{}{
 		})
 
-		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(string(requestBody)))
+		req := httptest.NewRequest(http.MethodPut, "/", strings.NewReader(string(requestBody)))
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		req.Header.Set("Authorization", "Bearer "+token)
 
@@ -462,7 +462,7 @@ func TestUpdate(t *testing.T) {
 			"category_id" : 1,
 		})
 
-		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(string(requestBody)))
+		req := httptest.NewRequest(http.MethodPut, "/", strings.NewReader(string(requestBody)))
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		req.Header.Set("Authorization", "Bearer "+token)
 
@@ -500,7 +500,7 @@ func TestUpdate(t *testing.T) {
 			"category_id" : 1,
 		})
 
-		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(string(requestBody)))
+		req := httptest.NewRequest(http.MethodPut, "/", strings.NewReader(string(requestBody)))
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		req.Header.Set("Authorization", "Bearer "+token)
 
