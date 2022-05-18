@@ -27,13 +27,16 @@ func (m *eventModel) Insert(task *entity.Event) response.InsertEvent {
 	}
 }
 
-func (m *eventModel) GetAll(name, location string) []response.GetEvent {
+func (m *eventModel) GetAll(name, location string, limit, page int) []response.GetEvent {
 	var tasks []entity.Event
-	m.DB.Where("name LIKE ? AND location LIKE ?", "%"+name+"%", "%"+location+"%").Find(&tasks)
+
+	offset := (page - 1) * limit
+	m.DB.Limit(limit).Offset(offset).Order("date_start asc").Where("name LIKE ? AND location LIKE ?", "%"+name+"%", "%"+location+"%").Find(&tasks)
 
 	var results []response.GetEvent
 	for _, result := range tasks {
 		results = append(results, response.GetEvent{
+			ID: result.ID,
 			Name : result.Name,
 			HostedBy: result.HostedBy,
 			DateStart: result.DateStart,

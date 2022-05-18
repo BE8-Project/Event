@@ -75,8 +75,10 @@ func (c *eventController) GetAll() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		name := ctx.QueryParam("name")
 		location := ctx.QueryParam("location")
+		limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+		page, _ := strconv.Atoi(ctx.QueryParam("page"))
 
-		results := c.Connect.GetAll(name, location)
+		results := c.Connect.GetAll(name, location, limit, page)
 
 		if len(results) == 0 {
 			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
@@ -95,7 +97,7 @@ func (c *eventController) Get() echo.HandlerFunc {
 			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
 		}
 
-		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil semua Event!", result))
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil Event!", result))
 	}
 }
 
@@ -107,10 +109,6 @@ func (c *eventController) Update() echo.HandlerFunc {
 
 		if err := ctx.Bind(&request); err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
-		}
-
-		if err := c.Validate.Struct(request); err != nil {
-			return ctx.JSON(http.StatusBadRequest, response.StatusBadRequest(err))
 		}
 
 		var event entity.Event

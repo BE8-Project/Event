@@ -12,3 +12,7 @@ func General(e *echo.Echo) {
 	}))
 	e.Use(middleware.CORS())
 }
+
+func Secret() echo.MiddlewareFunc {
+	return middleware.JWT([]byte("$p4ssw0rd"))
+}
