@@ -80,7 +80,7 @@ func TestRegister(t *testing.T) {
 		json.Unmarshal([]byte(res.Body.Bytes()), &resp)
 
 		assert.Equal(t, 400, resp.Code)
-		assert.Equal(t, "invalid request", resp.Message)
+		assert.Equal(t, "tipe field ada yang salah", resp.Message)
 	})
 	t.Run("Status BadRequest", func(t *testing.T) {
 		e := echo.New()
@@ -208,7 +208,7 @@ func TestLogin(t *testing.T) {
 		json.Unmarshal([]byte(res.Body.Bytes()), &resp)
 
 		assert.Equal(t, 400, resp.Code)
-		assert.Equal(t, "invalid request", resp.Message)
+		assert.Equal(t, "tipe field ada yang salah", resp.Message)
 	})
 	t.Run("Status Unauthorized", func(t *testing.T) {
 		e := echo.New()
@@ -248,12 +248,13 @@ func TestGetUser(t *testing.T) {
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set(echo.HeaderAuthorization, "Bearer "+token_user)
 
 		res := httptest.NewRecorder()
 		context := e.NewContext(req, res)
 		controller := NewUserController(&mockUser{})
 
-		controller.GetUser(context)
+		middleware.JWTWithConfig(middleware.JWTConfig{SigningMethod: "HS256", SigningKey: []byte("$p4ssw0rd")})(controller.GetUser())(context)
 
 		type Response struct {
 			Code    int    `json:"code"`
@@ -267,31 +268,6 @@ func TestGetUser(t *testing.T) {
 		assert.Equal(t, 200, resp.Code)
 		assert.Equal(t, "success get User!", resp.Message)
 		assert.Equal(t, map[string]interface{}(map[string]interface{}{"name": "fajar", "username": "fajar123", "email": "fajar123@gmail.com", "hp": "098765433212", "created_at": "0001-01-01T00:00:00Z"}), resp.Data)
-	})
-	t.Run("Status Not Found", func(t *testing.T) {
-		e := echo.New()
-
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-		res := httptest.NewRecorder()
-		context := e.NewContext(req, res)
-		controller := NewUserController(&mockErorUser{})
-
-		controller.GetUser(context)
-
-		type Response struct {
-			Code    int    `json:"code"`
-			Message string `json:"message"`
-			Data    interface{}
-		}
-
-		var resp Response
-		json.Unmarshal([]byte(res.Body.Bytes()), &resp)
-
-		assert.Equal(t, 404, resp.Code)
-		assert.Equal(t, "User not found", resp.Message)
-		assert.Nil(t, resp.Data)
 	})
 
 }
@@ -367,7 +343,7 @@ func TestUpdate(t *testing.T) {
 		json.Unmarshal([]byte(res.Body.Bytes()), &resp)
 
 		assert.Equal(t, 400, resp.Code)
-		assert.Equal(t, "invalid request", resp.Message)
+		assert.Equal(t, "tipe field ada yang salah", resp.Message)
 	})
 	t.Run("Status Invalid", func(t *testing.T) {
 		e := echo.New()
@@ -450,13 +426,13 @@ func (u *mockUser) Insert(user *entity.User) (response.User, error) {
 }
 func (u *mockUser) Login(custom []string, password string) (response.Login, error) {
 	return response.Login{
-		ID:       2,
-		Name:     "fajar",
-		Username: "fajar12",
+		ID:    2,
+		Name:  "fajar",
+		Token: "",
 	}, nil
 }
 
-func (u *mockUser) GetOne(username string) response.User {
+func (u *mockUser) GetOne(user_id uint) response.User {
 	return response.User{
 		Name:     "fajar",
 		Username: "fajar123",
@@ -464,14 +440,14 @@ func (u *mockUser) GetOne(username string) response.User {
 		HP:       "098765433212",
 	}
 }
-func (u *mockUser) Update(newUser *entity.User, username string) (response.UpdateUser, error) {
+func (u *mockUser) Update(newUser *entity.User, user_id uint) (response.UpdateUser, error) {
 	return response.UpdateUser{
 		Name:      newUser.Name,
 		UpdatedAt: newUser.UpdatedAt,
 	}, nil
 }
 
-func (u *mockUser) Delete(username string) response.DeleteUser {
+func (u *mockUser) Delete(user_id uint) response.DeleteUser {
 	return response.DeleteUser{}
 }
 
@@ -482,13 +458,13 @@ func (u *mockErorInputUser) Insert(user *entity.User) (response.User, error) {
 }
 func (u *mockErorInputUser) Login(custom []string, password string) (response.Login, error) {
 	return response.Login{
-		ID:       0,
-		Name:     "fajar",
-		Username: "fajar12",
+		ID:    0,
+		Name:  "fajar",
+		Token: "",
 	}, nil
 }
 
-func (u *mockErorInputUser) GetOne(username string) response.User {
+func (u *mockErorInputUser) GetOne(user_id uint) response.User {
 	return response.User{
 		Name:     "fajar",
 		Username: "fajar123",
@@ -496,11 +472,11 @@ func (u *mockErorInputUser) GetOne(username string) response.User {
 		HP:       "098765433212",
 	}
 }
-func (u *mockErorInputUser) Update(newUser *entity.User, username string) (response.UpdateUser, error) {
+func (u *mockErorInputUser) Update(newUser *entity.User, user_id uint) (response.UpdateUser, error) {
 	return response.UpdateUser{}, errors.New("kesalahan input")
 }
 
-func (u *mockErorInputUser) Delete(username string) response.DeleteUser {
+func (u *mockErorInputUser) Delete(user_id uint) response.DeleteUser {
 	return response.DeleteUser{}
 }
 
@@ -511,23 +487,23 @@ func (u *mockErorUser) Insert(user *entity.User) (response.User, error) {
 }
 func (u *mockErorUser) Login(custom []string, password string) (response.Login, error) {
 	return response.Login{
-		ID:       0,
-		Name:     "fajar",
-		Username: "fajar12",
+		ID:    0,
+		Name:  "fajar",
+		Token: "",
 	}, nil
 }
 
-func (u *mockErorUser) GetOne(username string) response.User {
+func (u *mockErorUser) GetOne(user_id uint) response.User {
 	return response.User{}
 }
-func (u *mockErorUser) Update(newUser *entity.User, username string) (response.UpdateUser, error) {
+func (u *mockErorUser) Update(newUser *entity.User, user_id uint) (response.UpdateUser, error) {
 	return response.UpdateUser{
 		Name:      newUser.Name,
 		UpdatedAt: newUser.UpdatedAt,
 	}, nil
 }
 
-func (u *mockErorUser) Delete(username string) response.DeleteUser {
+func (u *mockErorUser) Delete(user_id uint) response.DeleteUser {
 	return response.DeleteUser{}
 }
 
@@ -540,7 +516,7 @@ func (u *mockAutorizUser) Login(custom []string, password string) (response.Logi
 	return response.Login{}, errors.New("user or password is wrong")
 }
 
-func (u *mockAutorizUser) GetOne(username string) response.User {
+func (u *mockAutorizUser) GetOne(user_id uint) response.User {
 	return response.User{
 		Name:     "fajar",
 		Username: "fajar123",
@@ -548,13 +524,13 @@ func (u *mockAutorizUser) GetOne(username string) response.User {
 		HP:       "098765433212",
 	}
 }
-func (u *mockAutorizUser) Update(newUser *entity.User, username string) (response.UpdateUser, error) {
+func (u *mockAutorizUser) Update(newUser *entity.User, user_id uint) (response.UpdateUser, error) {
 	return response.UpdateUser{
 		Name:      newUser.Name,
 		UpdatedAt: newUser.UpdatedAt,
 	}, nil
 }
 
-func (u *mockAutorizUser) Delete(username string) response.DeleteUser {
+func (u *mockAutorizUser) Delete(user_id uint) response.DeleteUser {
 	return response.DeleteUser{}
 }

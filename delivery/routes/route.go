@@ -11,13 +11,12 @@ import (
 
 func UsersPath(e *echo.Echo, connUser user.UserController) {
 	e.POST("/register", connUser.Register())
-	e.POST("/admin", connUser.Admin())
 	e.POST("/login", connUser.Login())
-	
-	customer := e.Group("/users", middleware.JWT([]byte("$p4ssw0rd")))
-	customer.GET("/profile", connUser.GetUser())
-	customer.PUT("/profile", connUser.Update())
-	customer.DELETE("/profile", connUser.Delete())
+
+	customer := e.Group("/profile", middleware.JWT([]byte("$p4ssw0rd")))
+	customer.GET("", connUser.GetUser())
+	customer.PUT("", connUser.Update())
+	customer.DELETE("", connUser.Delete())
 }
 
 func CategoryPath(e *echo.Echo, category category.CategoryController) {
