@@ -73,13 +73,16 @@ func (c *eventController) Insert() echo.HandlerFunc {
 
 func (c *eventController) GetAll() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		results := c.Connect.GetAll()
+		name := ctx.QueryParam("name")
+		location := ctx.QueryParam("location")
+
+		results := c.Connect.GetAll(name, location)
 
 		if len(results) == 0 {
 			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
 		}
 		
-		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil mengambil semua Event!", results))
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil semua Event!", results))
 	}
 }
 
@@ -92,7 +95,7 @@ func (c *eventController) Get() echo.HandlerFunc {
 			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
 		}
 
-		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil mengambil semua Event!", result))
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil semua Event!", result))
 	}
 }
 

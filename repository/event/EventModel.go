@@ -27,9 +27,9 @@ func (m *eventModel) Insert(task *entity.Event) response.InsertEvent {
 	}
 }
 
-func (m *eventModel) GetAll() []response.GetEvent {
+func (m *eventModel) GetAll(name, location string) []response.GetEvent {
 	var tasks []entity.Event
-	m.DB.Find(&tasks)
+	m.DB.Where("name LIKE ? AND location LIKE ?", "%"+name+"%", "%"+location+"%").Find(&tasks)
 
 	var results []response.GetEvent
 	for _, result := range tasks {
