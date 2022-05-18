@@ -10,3 +10,14 @@ type InsertEvent struct {
 	Ticket     int    `json:"ticket" validate:"required"`
 	CategoryID uint   `json:"category_id" validate:"required"`
 }
+
+type UpdateEvent struct {
+	Name       string `json:"name"`
+	HostedBy   string `json:"hosted_by"`
+	DateStart  string `json:"date_start"`
+	DateEnd    string `json:"date_end"`
+	Location   string `json:"location"`
+	Details    string `json:"details"`
+	Ticket     int    `json:"ticket"`
+	CategoryID uint   `json:"category_id"`
+}

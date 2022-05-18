@@ -16,3 +16,8 @@ type GetEvent struct {
 	Details    string `json:"details" validate:"required"`
 	Ticket     int    `json:"ticket" validate:"required"`
 }
+
+type UpdateEvent struct {
+	Name      string `json:"name"`
+	UpdatedAt time.Time `json:"updated_at"`
+}

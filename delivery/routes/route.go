@@ -30,7 +30,9 @@ func CategoryPath(e *echo.Echo, category category.CategoryController) {
 
 func EventPath(e *echo.Echo, connect event.EventController) {
 	e.GET("/events", connect.GetAll())
+	e.GET("/events/:id", connect.Get())
 
 	event := e.Group("/admin/events", middleware.JWTWithConfig(middleware.JWTConfig{SigningKey: []byte("$p4ssw0rd")}))
 	event.POST("", connect.Insert())
+	event.PUT("/:id", connect.Update())
 }

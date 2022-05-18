@@ -7,6 +7,7 @@ import (
 	"event/entity"
 	repository "event/repository/event"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -39,13 +40,17 @@ func (c *eventController) Insert() echo.HandlerFunc {
 		}
 
 		layout := "2006-01-02T15:04"
-		strStart := request.DateStart
-		strEnd := request.DateEnd
-		convertStart, err := time.Parse(layout, strStart)
-		convertEnd, err := time.Parse(layout, strEnd)
+		start, end := request.DateStart, request.DateEnd
+		convertStart, err := time.Parse(layout, start)
 
 		if err != nil {
-			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date salah"))
+			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date start salah"))
+		}
+
+		convertEnd, err := time.Parse(layout, end)
+
+		if err != nil {
+			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date end salah"))
 		}
 
 		event := entity.Event{
@@ -75,5 +80,77 @@ func (c *eventController) GetAll() echo.HandlerFunc {
 		}
 		
 		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil mengambil semua Event!", results))
+	}
+}
+
+func (c *eventController) Get() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		
+		result, err := c.Connect.Get(uint(id))
+		if err != nil {
+			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
+		}
+
+		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil mengambil semua Event!", result))
+	}
+}
+
+func (c *eventController) Update() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user_id := uint(middlewares.ExtractTokenUserId(ctx))
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		var request request.UpdateEvent
+
+		if err := ctx.Bind(&request); err != nil {
+			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
+		}
+
+		if err := c.Validate.Struct(request); err != nil {
+			return ctx.JSON(http.StatusBadRequest, response.StatusBadRequest(err))
+		}
+
+		var event entity.Event
+		var requestStart, requestEnd time.Time
+		start, end := request.DateStart, request.DateEnd
+		if request.DateStart != "" && request.DateEnd != "" {
+			layout := "2006-01-02T15:04"
+			
+			convertStart, err := time.Parse(layout, start)
+
+			if err != nil {
+				return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date start salah"))
+			}
+
+			convertEnd, err := time.Parse(layout, end)
+
+			if err != nil {
+				return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date end salah"))
+			}
+
+			requestStart, requestEnd = convertStart, convertEnd
+		}
+
+		event = entity.Event{
+			Name:       request.Name,
+			HostedBy:   request.HostedBy,
+			DateStart:  requestStart,
+			DateEnd:    requestEnd,
+			Location:   request.Location,
+			Details:    request.Details,
+			Ticket:     request.Ticket,
+			CategoryID: request.CategoryID,
+		}
+
+		result, err := c.Connect.Update(uint(id), user_id, &event)
+		if err != nil {
+			if err.Error() == "required" {
+				return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tidak ada field yang dimasukkan"))
+			} else {
+				return ctx.JSON(http.StatusForbidden, response.StatusForbidden(err.Error()))
+			}
+		}
+
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengupdate Event!", result))
 	}
 }

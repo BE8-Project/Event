@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"event/delivery/helpers/response"
 	"event/entity"
 
@@ -44,4 +45,44 @@ func (m *eventModel) GetAll() []response.GetEvent {
 	}
 
 	return results
+}
+
+func (m *eventModel) Get(id uint) (response.GetEvent, error) {
+	var task entity.Event
+	record := m.DB.Where("id = ?", id).First(&task)
+
+	if record.RowsAffected == 0 {
+		return response.GetEvent{}, errors.New("event not found")
+	} else {
+		return response.GetEvent {
+			Name : task.Name,
+			HostedBy: task.HostedBy,
+			DateStart: task.DateStart,
+			DateEnd: task.DateEnd,
+			Location: task.Location,
+			Details: task.Details,
+			Ticket: task.Ticket,
+		}, nil
+	}
+}
+
+func (m *eventModel) Update(id, user_id uint, task *entity.Event) (response.UpdateEvent, error) {
+	if task.Name == "" && task.HostedBy == "" && task.Location == "" && task.Details == "" && task.Ticket == 0 {
+		return response.UpdateEvent{}, errors.New("required")
+	}
+
+	update := m.DB.Model(&entity.Event{}).Where("id = ? AND user_id = ?", id, user_id).Updates(&task)
+
+	if task.Name == "" {
+		m.DB.Where("id = ?", id).First(&task)
+	}
+
+	if update.RowsAffected == 0 {
+		return response.UpdateEvent{}, errors.New("you are not allowed to access this resource")
+	} else {
+		return response.UpdateEvent{
+			Name: 	task.Name,
+			UpdatedAt: task.UpdatedAt,
+		}, nil
+	}
 }
