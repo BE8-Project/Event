@@ -3,6 +3,7 @@ package main
 import (
 	"event/config"
 	"event/delivery/controllers/category"
+	"event/delivery/controllers/comment"
 	"event/delivery/controllers/event"
 	"event/delivery/controllers/participant"
 	"event/delivery/controllers/user"
@@ -12,6 +13,7 @@ import (
 	eventModel "event/repository/event"
 	participantModel "event/repository/participant"
 	userModel "event/repository/user"
+	commentModel "event/repository/comment"
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
@@ -36,6 +38,7 @@ func main() {
 	routes.CategoryPath(e, categController)
 	routes.EventPath(e, event.NewEventController(eventModel.NewEventModel(db), validator.New()))
 	routes.ParticipantPath(e, participant.NewParticipantController(participantModel.NewParticipantModel(db), validator.New()))
+	routes.CommentPath(e,comment.NewCommentController(commentModel.NewCommenttModel(db),validator.New()))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", conf.Port)))
 }

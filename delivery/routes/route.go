@@ -2,6 +2,7 @@ package routes
 
 import (
 	"event/delivery/controllers/category"
+	"event/delivery/controllers/comment"
 	"event/delivery/controllers/event"
 	"event/delivery/controllers/participant"
 	"event/delivery/controllers/user"
@@ -13,7 +14,7 @@ import (
 func UsersPath(e *echo.Echo, connUser user.UserController) {
 	e.POST("/register", connUser.Register())
 	e.POST("/login", connUser.Login())
-	
+
 	customer := e.Group("/users", middlewares.Secret())
 	customer.GET("/profile", connUser.GetUser())
 	customer.PUT("/profile", connUser.Update())
@@ -37,6 +38,11 @@ func EventPath(e *echo.Echo, connect event.EventController) {
 	event.GET("", connect.GetByUser())
 	event.PUT("/:id", connect.Update())
 	event.DELETE("/:id", connect.Delete())
+}
+func CommentPath(e *echo.Echo, connect comment.CommentContro) {
+	Comment := e.Group("/comment", middlewares.Secret())
+	Comment.POST("", connect.Insert())
+	Comment.DELETE("/:id", connect.Delete())
 }
 
 func ParticipantPath(e *echo.Echo, connect participant.ParticipantController) {
