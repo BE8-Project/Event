@@ -37,5 +37,5 @@ func main() {
 	routes.EventPath(e, event.NewEventController(eventModel.NewEventModel(db), validator.New()))
 	routes.ParticipantPath(e, participant.NewParticipantController(participantModel.NewParticipantModel(db), validator.New()))
 
-	e.Logger.Fatal(e.Start(fmt.Sprintf("localhost:%d", conf.Port)))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", conf.Port)))
 }
