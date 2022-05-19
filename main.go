@@ -4,11 +4,13 @@ import (
 	"event/config"
 	"event/delivery/controllers/category"
 	"event/delivery/controllers/event"
+	"event/delivery/controllers/participant"
 	"event/delivery/controllers/user"
 	"event/delivery/middlewares"
 	"event/delivery/routes"
 	categModel "event/repository/category"
 	eventModel "event/repository/event"
+	participantModel "event/repository/participant"
 	userModel "event/repository/user"
 	"fmt"
 
@@ -33,6 +35,7 @@ func main() {
 	routes.UsersPath(e, userController)
 	routes.CategoryPath(e, categController)
 	routes.EventPath(e, event.NewEventController(eventModel.NewEventModel(db), validator.New()))
+	routes.ParticipantPath(e, participant.NewParticipantController(participantModel.NewParticipantModel(db), validator.New()))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf("localhost:%d", conf.Port)))
 }
