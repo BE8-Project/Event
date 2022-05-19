@@ -6,8 +6,7 @@ import (
 )
 
 func General(e *echo.Echo) {
-	e.Pre(middleware.AddTrailingSlash())
-	// e.Pre(middleware.RemoveTrailingSlash())
+	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "time:${time_rfc3339}, method=${method}, uri=${uri}, status=${status}\n",
 	}))

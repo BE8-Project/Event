@@ -11,7 +11,7 @@ import (
 )
 
 func InitDB(config AppConfig) *gorm.DB {
-	conString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+	conString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True",
 		config.Username,
 		config.Password,
 		config.Address,
