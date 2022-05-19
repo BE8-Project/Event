@@ -104,3 +104,25 @@ func (m *eventModel) Delete(id, user_id uint) (response.DeleteEvent, error) {
 		}, nil
 	}
 }
+
+func (m *eventModel) GetByUser(user_id uint) []response.GetEvent {
+	var tasks []entity.Event
+
+	m.DB.Where("user_id = ?", user_id).Find(&tasks)
+
+	var results []response.GetEvent
+	for _, result := range tasks {
+		results = append(results, response.GetEvent{
+			ID: result.ID,
+			Name : result.Name,
+			HostedBy: result.HostedBy,
+			DateStart: result.DateStart,
+			DateEnd: result.DateEnd,
+			Location: result.Location,
+			Details: result.Details,
+			Ticket: result.Ticket,
+		})
+	}
+
+	return results
+}

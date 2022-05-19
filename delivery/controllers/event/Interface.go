@@ -8,4 +8,5 @@ type EventController interface {
 	Get() echo.HandlerFunc
 	Update() echo.HandlerFunc
 	Delete() echo.HandlerFunc
+	GetByUser() echo.HandlerFunc
 }

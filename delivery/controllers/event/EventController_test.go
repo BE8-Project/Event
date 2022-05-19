@@ -581,6 +581,59 @@ func TestDelete(t *testing.T) {
 	})
 }
 
+func TestGetbyUser(t *testing.T) {
+	t.Run("Status OK", func(t *testing.T) {
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath("/events")
+		controller := NewEventController(&mockEvent{}, validator.New())
+		middlewares.Secret()(controller.GetByUser())(context)
+
+		type Response struct {
+			Code    int    `json:"code"`
+			Message string `json:"message"`
+			Data    interface{}
+		}
+
+		var resp Response
+		json.Unmarshal([]byte(res.Body.Bytes()), &resp)
+		
+		assert.Equal(t, 200, resp.Code)
+		assert.Equal(t, "Berhasil mengambil Event!", resp.Message)
+		assert.Equal(t, []interface {}{map[string]interface {}{"date_end":"0001-01-01T00:00:00Z", "date_start":"0001-01-01T00:00:00Z", "details":"presmian dunia digital", "hosted_by":"Murni Sekali", "id":float64(1), "location":"jakarta", "name":"Webinar sekali setahun", "ticket":float64(5)}}, resp.Data)
+	})
+
+	t.Run("Status Notfound", func(t *testing.T) {
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath("/events")
+		controller := NewEventController(&mockError{}, validator.New())
+		controller.GetAll()(context)
+
+		type Response struct {
+			Code    int    `json:"code"`
+			Message string `json:"message"`
+			Data    interface{}
+		}
+
+		var resp Response
+		json.Unmarshal([]byte(res.Body.Bytes()), &resp)
+		
+		assert.Equal(t, 404, resp.Code)
+		assert.Equal(t, "Data tidak ditemukan!", resp.Message)
+		assert.Nil(t, resp.Data)	
+	})
+}
+
 type mockEvent struct {}
 
 func (m *mockEvent) Insert(task *entity.Event) response.InsertEvent {
@@ -642,6 +695,21 @@ func (m *mockEvent) Delete(id, user_id uint) (response.DeleteEvent, error) {
 	}, nil
 }
 
+func (m *mockEvent) GetByUser(user_id uint) []response.GetEvent {
+	return []response.GetEvent{
+		{
+			ID: 1,
+			Name: "Webinar sekali setahun",
+			HostedBy: "Murni Sekali",
+			DateStart: time.Time{},
+			DateEnd: time.Time{},
+			Location: "jakarta",
+			Details: "presmian dunia digital",
+			Ticket: 5,
+		},
+	}
+}
+
 type mockError struct {}
 
 func (m *mockError) Insert(task *entity.Event) response.InsertEvent {
@@ -664,6 +732,10 @@ func (m *mockError) Delete(id, user_id uint) (response.DeleteEvent, error) {
 	return response.DeleteEvent{}, errors.New("you are not allowed to access this resource")
 }
 
+func (m *mockError) GetByUser(user_id uint) []response.GetEvent {
+	return []response.GetEvent{}
+}
+
 type mockErrorForbidden struct {}
 
 func (m *mockErrorForbidden) Insert(task *entity.Event) response.InsertEvent {
@@ -684,4 +756,8 @@ func (m *mockErrorForbidden) Update(id, user_id uint, task *entity.Event) (respo
 
 func (m *mockErrorForbidden) Delete(id, user_id uint) (response.DeleteEvent, error) {
 	return response.DeleteEvent{}, errors.New("you are not allowed to access this resource")
+}
+
+func (m *mockErrorForbidden) GetByUser(user_id uint) []response.GetEvent {
+	return []response.GetEvent{}
 }

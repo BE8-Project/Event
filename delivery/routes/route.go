@@ -34,6 +34,7 @@ func EventPath(e *echo.Echo, connect event.EventController) {
 
 	event := e.Group("/admin/events", middlewares.Secret())
 	event.POST("", connect.Insert())
+	event.GET("", connect.GetByUser())
 	event.PUT("/:id", connect.Update())
 	event.DELETE("/:id", connect.Delete())
 }

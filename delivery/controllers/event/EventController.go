@@ -30,9 +30,7 @@ func (c *eventController) Insert() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user_id := uint(middlewares.ExtractTokenUserId(ctx))
 		var request request.InsertEvent
-		start, end := request.DateStart, request.DateEnd
-		layout := "2006-01-02T15:04"
-
+		
 		if err := ctx.Bind(&request); err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
@@ -41,6 +39,8 @@ func (c *eventController) Insert() echo.HandlerFunc {
 			return ctx.JSON(http.StatusBadRequest, response.StatusBadRequest(err))
 		}
 
+		start, end := request.DateStart, request.DateEnd
+		layout := "2006-01-02T15:04"
 		convertStart, err := time.Parse(layout, start)
 
 		if err != nil {
@@ -107,7 +107,7 @@ func (c *eventController) Update() echo.HandlerFunc {
 		var event entity.Event
 		var request request.UpdateEvent
 		var requestStart, requestEnd time.Time
-		start, end := request.DateStart, request.DateEnd
+		
 		user_id := uint(middlewares.ExtractTokenUserId(ctx))
 		id, _ := strconv.Atoi(ctx.Param("id"))
 		
@@ -115,6 +115,7 @@ func (c *eventController) Update() echo.HandlerFunc {
 			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
 
+		start, end := request.DateStart, request.DateEnd
 		if request.DateStart != "" && request.DateEnd != "" {
 			layout := "2006-01-02T15:04"
 			
@@ -170,5 +171,19 @@ func (c *eventController) Delete() echo.HandlerFunc {
 		}
 
 		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil menghapus Event!", result))
+	}
+}
+
+func (c *eventController) GetByUser() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user_id := uint(middlewares.ExtractTokenUserId(ctx))
+
+		results := c.Connect.GetByUser(user_id)
+
+		if len(results) == 0 {
+			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
+		}
+		
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil Event!", results))
 	}
 }
