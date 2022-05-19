@@ -52,7 +52,7 @@ func (cc *categController) GetAll() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(err))
 		}
-		return c.JSON(http.StatusCreated, response.StatusOK("success get Category!", strng))
+		return c.JSON(http.StatusOK, response.StatusOK("success get Category!", strng))
 	}
 }
 func (cc *categController) Delete() echo.HandlerFunc {
@@ -64,6 +64,6 @@ func (cc *categController) Delete() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(err))
 		}
-		return c.JSON(http.StatusCreated, response.StatusOK("success Delete", strng))
+		return c.JSON(http.StatusOK, response.StatusOK("success Delete", strng))
 	}
 }

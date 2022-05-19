@@ -33,15 +33,22 @@ func (cc *eventController) Insert() echo.HandlerFunc {
 		if err := c.Bind(&request); err != nil {
 			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
+
+		if err := cc.Validate.Struct(request); err != nil {
+			return c.JSON(http.StatusBadRequest, response.StatusBadRequest(err))
+		}
+
 		req := entity.Comment{
 			UserID:  user_id,
 			Field:   request.Field,
 			EventID: request.EventID,
 		}
+		
 		strg, err := cc.Connect.Insert(&req)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(err))
 		}
+
 		return c.JSON(http.StatusCreated, response.StatusCreated("succes comment", strg))
 	}
 }
@@ -55,6 +62,7 @@ func (cc *eventController) Delete() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(err))
 		}
-		return c.JSON(http.StatusCreated, response.StatusCreated("succes comment", strg))
+
+		return c.JSON(http.StatusOK, response.StatusOK("delete comment", strg))
 	}
 }

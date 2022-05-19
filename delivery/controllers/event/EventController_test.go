@@ -1,12 +1,14 @@
 package event
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"event/delivery/helpers/response"
 	"event/delivery/middlewares"
 	"event/entity"
 	"fmt"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -31,24 +33,35 @@ func TestRegister(t *testing.T) {
 	t.Run("Status OK", func(t *testing.T) {
 		e := echo.New()
 
-		requestBody, _ := json.Marshal(map[string]interface{}{
-			"name": "status completed",
-			"hosted_by": "Murni Sekali",
-			"date_start": "2022-12-17T19:47",
-			"date_end": "2022-12-17T19:47",
-			"location": "jakarta",
-			"details": "presmian dunia digital",
-			"ticket": 5,
-			"price" : 10000,
-			"category_id" : 1,
-		})
+		body := new(bytes.Buffer)
+		writer := multipart.NewWriter(body)
+		writer.WriteField("name", "status completed")
+		writer.WriteField("hosted_by", "Murni Sekali")
+		writer.WriteField("date_start", "2022-12-17T19:47")
+		writer.WriteField("date_end", "2022-12-17T19:47")
+		writer.WriteField("location", "jakarta")
+		writer.WriteField("details", "presmian dunia digital")
+		ticket, _ := writer.CreateFormField("ticket")
+		ticket.Write([]byte("5"))
 
-		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(string(requestBody)))
+		price, _ := writer.CreateFormField("price")
+		price.Write([]byte("10000"))
+		
+		category, _ := writer.CreateFormField("category_id")
+		category.Write([]byte("1"))
+
+		part, _ := writer.CreateFormFile("file", "file.png")
+		part.Write([]byte(`example`))
+		writer.Close()
+
+		req := httptest.NewRequest(http.MethodPost, "/", body)
+		req.Header.Set("Content-Type", writer.FormDataContentType())
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		req.Header.Set("Authorization", "Bearer "+token)
 
 		res := httptest.NewRecorder()
 		context := e.NewContext(req, res)
+		context.FormFile("file")
 		context.SetPath("/admin/events")
 		controller := NewEventController(&mockEvent{}, validator.New())
 		middlewares.Secret()(controller.Insert())(context)
