@@ -25,24 +25,25 @@ type Category struct {
 
 type Event struct {
 	gorm.Model
-	Name       string
-	HostedBy   string
-	DateStart  time.Time
-	DateEnd    time.Time
-	Location   string
-	Details    string
-	Ticket     int
-	UserID     uint
-	CategoryID uint
+	Name         string
+	HostedBy     string
+	DateStart    time.Time
+	DateEnd      time.Time
+	Location     string
+	Image        string
+	Details      string
+	Ticket       int
+	UserID       uint
+	CategoryID   uint
 	Participants []Participant `gorm:"foreingkey:EventID"`
 }
 
 type Participant struct {
 	gorm.Model
-	EventID	uint
-	UserID	uint
-	OrderID string
-	PaymentType	string
-	Total	int
-	Status string
+	EventID     uint
+	UserID      uint
+	OrderID     string
+	PaymentType string
+	Total       int
+	Status      string
 }

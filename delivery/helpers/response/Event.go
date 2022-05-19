@@ -20,6 +20,7 @@ type GetEvent struct {
 	Location   string `json:"location"`
 	Details    string `json:"details"`
 	Ticket     int    `json:"ticket"`
+	Image	   string `json:"image"`
 }
 
 type UpdateEvent struct {

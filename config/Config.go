@@ -33,19 +33,19 @@ func GetConfig() *AppConfig {
 func InitConfig() *AppConfig {
 	var defaultConfig AppConfig
 	defaultConfig.Port = 8000
-	defaultConfig.Driver = getEnv("DRIVER", "mysql")
-	defaultConfig.Name = getEnv("NAME", "event")
-	defaultConfig.Address = getEnv("ADDRESS", "localhost")
+	defaultConfig.Driver = GetEnv("DRIVER", "mysql")
+	defaultConfig.Name = GetEnv("NAME", "event")
+	defaultConfig.Address = GetEnv("ADDRESS", "localhost")
 	defaultConfig.DB_Port = 3306
-	defaultConfig.Username = getEnv("DB_USERNAME", "root")
-	defaultConfig.Password = getEnv("PASSWORD", "")
+	defaultConfig.Username = GetEnv("DB_USERNAME", "root")
+	defaultConfig.Password = GetEnv("PASSWORD", "")
 
 	fmt.Println(defaultConfig)
 
 	return &defaultConfig
 }
 
-func getEnv(key, fallback string) string {
+func GetEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		fmt.Println(value)
 		return value

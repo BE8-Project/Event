@@ -2,7 +2,7 @@ package participant
 
 import (
 	"event/config"
-	"event/delivery/controllers/usecase"
+	"event/delivery/usecase"
 	"event/delivery/helpers/request"
 	"event/delivery/helpers/response"
 	"event/delivery/middlewares"

@@ -4,6 +4,7 @@ import (
 	"event/delivery/helpers/request"
 	"event/delivery/helpers/response"
 	"event/delivery/middlewares"
+	"event/delivery/usecase"
 	"event/entity"
 	repository "event/repository/event"
 	"net/http"
@@ -30,11 +31,19 @@ func (c *eventController) Insert() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user_id := uint(middlewares.ExtractTokenUserId(ctx))
 		var request request.InsertEvent
-		
+
 		if err := ctx.Bind(&request); err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
+		file, err := ctx.FormFile("file")
+		if err != nil {
+			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tidak ada file yang diupload"))
+		}
+		img, err := usecase.Upload(file)
 
+		if err != nil {
+			return ctx.JSON(http.StatusBadRequest, response.StatusBadRequestUpload(err))
+		}
 		if err := c.Validate.Struct(request); err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusBadRequest(err))
 		}
@@ -59,6 +68,7 @@ func (c *eventController) Insert() echo.HandlerFunc {
 			DateStart:  convertStart,
 			DateEnd:    convertEnd,
 			Location:   request.Location,
+			Image:      img,
 			Details:    request.Details,
 			Ticket:     request.Ticket,
 			CategoryID: request.CategoryID,
@@ -83,7 +93,7 @@ func (c *eventController) GetAll() echo.HandlerFunc {
 		if len(results) == 0 {
 			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
 		}
-		
+
 		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil semua Event!", results))
 	}
 }
@@ -91,9 +101,9 @@ func (c *eventController) GetAll() echo.HandlerFunc {
 func (c *eventController) Get() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		
+
 		result, err := c.Connect.Get(uint(id))
-		
+
 		if err != nil {
 			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
 		}
@@ -107,10 +117,10 @@ func (c *eventController) Update() echo.HandlerFunc {
 		var event entity.Event
 		var request request.UpdateEvent
 		var requestStart, requestEnd time.Time
-		
+
 		user_id := uint(middlewares.ExtractTokenUserId(ctx))
 		id, _ := strconv.Atoi(ctx.Param("id"))
-		
+
 		if err := ctx.Bind(&request); err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
 		}
@@ -118,7 +128,7 @@ func (c *eventController) Update() echo.HandlerFunc {
 		start, end := request.DateStart, request.DateEnd
 		if request.DateStart != "" && request.DateEnd != "" {
 			layout := "2006-01-02T15:04"
-			
+
 			convertStart, err := time.Parse(layout, start)
 
 			if err != nil {
@@ -146,7 +156,7 @@ func (c *eventController) Update() echo.HandlerFunc {
 		}
 
 		result, err := c.Connect.Update(uint(id), user_id, &event)
-		
+
 		if err != nil {
 			if err.Error() == "required" {
 				return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tidak ada field yang dimasukkan"))
@@ -165,7 +175,7 @@ func (c *eventController) Delete() echo.HandlerFunc {
 		id, _ := strconv.Atoi(ctx.Param("id"))
 
 		result, err := c.Connect.Delete(uint(id), user_id)
-		
+
 		if err != nil {
 			return ctx.JSON(http.StatusForbidden, response.StatusForbidden(err.Error()))
 		}
@@ -183,7 +193,7 @@ func (c *eventController) GetByUser() echo.HandlerFunc {
 		if len(results) == 0 {
 			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
 		}
-		
+
 		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil Event!", results))
 	}
 }

@@ -40,6 +40,13 @@ func StatusBadRequestDuplicate(err error) map[string]interface{} {
 		"data":    nil,
 	}
 }
+func StatusBadRequestUpload(err error) map[string]interface{} {
+	return map[string]interface{}{
+		"code":    http.StatusBadRequest,
+		"message": err.Error(),
+		"data":    nil,
+	}
+}
 
 func StatusUnauthorized(err error) map[string]interface{} {
 	return map[string]interface{}{

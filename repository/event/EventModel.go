@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"event/delivery/helpers/response"
+	"event/delivery/usecase"
 	"event/entity"
 
 	"gorm.io/gorm"
@@ -22,7 +23,7 @@ func (m *eventModel) Insert(task *entity.Event) response.InsertEvent {
 	m.DB.Create(&task)
 
 	return response.InsertEvent{
-		Name: 	task.Name,
+		Name:      task.Name,
 		CreatedAt: task.CreatedAt,
 	}
 }
@@ -36,14 +37,15 @@ func (m *eventModel) GetAll(name, location string, limit, page int) []response.G
 	var results []response.GetEvent
 	for _, result := range tasks {
 		results = append(results, response.GetEvent{
-			ID: result.ID,
-			Name : result.Name,
-			HostedBy: result.HostedBy,
+			ID:        result.ID,
+			Name:      result.Name,
+			HostedBy:  result.HostedBy,
 			DateStart: result.DateStart,
-			DateEnd: result.DateEnd,
-			Location: result.Location,
-			Details: result.Details,
-			Ticket: result.Ticket,
+			DateEnd:   result.DateEnd,
+			Location:  result.Location,
+			Details:   result.Details,
+			Ticket:    result.Ticket,
+			Image:     result.Image,
 		})
 	}
 
@@ -57,14 +59,15 @@ func (m *eventModel) Get(id uint) (response.GetEvent, error) {
 	if record.RowsAffected == 0 {
 		return response.GetEvent{}, errors.New("event not found")
 	} else {
-		return response.GetEvent {
-			Name : task.Name,
-			HostedBy: task.HostedBy,
+		return response.GetEvent{
+			Name:      task.Name,
+			HostedBy:  task.HostedBy,
 			DateStart: task.DateStart,
-			DateEnd: task.DateEnd,
-			Location: task.Location,
-			Details: task.Details,
-			Ticket: task.Ticket,
+			DateEnd:   task.DateEnd,
+			Location:  task.Location,
+			Details:   task.Details,
+			Ticket:    task.Ticket,
+			Image:     task.Image,
 		}, nil
 	}
 }
@@ -84,7 +87,7 @@ func (m *eventModel) Update(id, user_id uint, task *entity.Event) (response.Upda
 		return response.UpdateEvent{}, errors.New("you are not allowed to access this resource")
 	} else {
 		return response.UpdateEvent{
-			Name: 	task.Name,
+			Name:      task.Name,
 			UpdatedAt: task.UpdatedAt,
 		}, nil
 	}
@@ -94,12 +97,16 @@ func (m *eventModel) Delete(id, user_id uint) (response.DeleteEvent, error) {
 	var task entity.Event
 	record := m.DB.Where("id = ? AND user_id = ?", id, user_id).First(&task)
 
+	if err := usecase.DeleteImg(task.Image); err != nil {
+		return response.DeleteEvent{}, errors.New("hapus img gagal")
+	}
+
 	if record.RowsAffected == 0 {
 		return response.DeleteEvent{}, errors.New("you are not allowed to access this resource")
 	} else {
 		m.DB.Delete(&task)
 		return response.DeleteEvent{
-			Name: 	task.Name,
+			Name:      task.Name,
 			DeletedAt: task.DeletedAt,
 		}, nil
 	}
@@ -113,14 +120,15 @@ func (m *eventModel) GetByUser(user_id uint) []response.GetEvent {
 	var results []response.GetEvent
 	for _, result := range tasks {
 		results = append(results, response.GetEvent{
-			ID: result.ID,
-			Name : result.Name,
-			HostedBy: result.HostedBy,
+			ID:        result.ID,
+			Name:      result.Name,
+			HostedBy:  result.HostedBy,
 			DateStart: result.DateStart,
-			DateEnd: result.DateEnd,
-			Location: result.Location,
-			Details: result.Details,
-			Ticket: result.Ticket,
+			DateEnd:   result.DateEnd,
+			Location:  result.Location,
+			Details:   result.Details,
+			Ticket:    result.Ticket,
+			Image:     result.Image,
 		})
 	}
 
