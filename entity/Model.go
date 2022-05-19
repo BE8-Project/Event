@@ -33,6 +33,7 @@ type Event struct {
 	Image        string
 	Details      string
 	Ticket       int
+	Price		 int
 	UserID       uint
 	CategoryID   uint
 	Participants []Participant `gorm:"foreingkey:EventID"`

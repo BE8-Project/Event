@@ -45,6 +45,7 @@ func (m *eventModel) GetAll(name, location string, limit, page int) []response.G
 			Location:  result.Location,
 			Details:   result.Details,
 			Ticket:    result.Ticket,
+			Price:	   result.Price,
 			Image:     result.Image,
 		})
 	}
@@ -60,6 +61,7 @@ func (m *eventModel) Get(id uint) (response.GetEvent, error) {
 		return response.GetEvent{}, errors.New("event not found")
 	} else {
 		return response.GetEvent{
+			ID:        task.ID,
 			Name:      task.Name,
 			HostedBy:  task.HostedBy,
 			DateStart: task.DateStart,
@@ -67,6 +69,7 @@ func (m *eventModel) Get(id uint) (response.GetEvent, error) {
 			Location:  task.Location,
 			Details:   task.Details,
 			Ticket:    task.Ticket,
+			Price:	   task.Price,
 			Image:     task.Image,
 		}, nil
 	}
@@ -128,6 +131,7 @@ func (m *eventModel) GetByUser(user_id uint) []response.GetEvent {
 			Location:  result.Location,
 			Details:   result.Details,
 			Ticket:    result.Ticket,
+			Price:	   result.Price,
 			Image:     result.Image,
 		})
 	}

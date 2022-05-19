@@ -39,6 +39,7 @@ func TestRegister(t *testing.T) {
 			"location": "jakarta",
 			"details": "presmian dunia digital",
 			"ticket": 5,
+			"price" : 10000,
 			"category_id" : 1,
 		})
 
@@ -77,6 +78,7 @@ func TestRegister(t *testing.T) {
 			"location": "jakarta",
 			"details": "presmian dunia digital",
 			"ticket": 5,
+			"price" : 10000,
 			"category_id" : 1,
 		})
 
@@ -115,6 +117,7 @@ func TestRegister(t *testing.T) {
 			"location": "jakarta",
 			"details": "presmian dunia digital",
 			"ticket": 5,
+			"price" : 10000,
 			"category_id" : 1,
 		})
 
@@ -153,6 +156,7 @@ func TestRegister(t *testing.T) {
 			"location": "jakarta",
 			"details": "presmian dunia digital",
 			"ticket": 5,
+			"price" : 10000,
 			"category_id" : 1,
 		})
 
@@ -191,6 +195,7 @@ func TestRegister(t *testing.T) {
 			"location": "jakarta",
 			"details": "presmian dunia digital",
 			"ticket": 5,
+			"price" : 10000,
 			"category_id" : 1,
 		})
 
@@ -459,6 +464,7 @@ func TestUpdate(t *testing.T) {
 			"location": "jakarta",
 			"details": "presmian dunia digital",
 			"ticket": 5,
+			"price" : 10000,
 			"category_id" : 1,
 		})
 
@@ -497,6 +503,7 @@ func TestUpdate(t *testing.T) {
 			"location": "jakarta",
 			"details": "presmian dunia digital",
 			"ticket": 5,
+			"price" : 10000,
 			"category_id" : 1,
 		})
 

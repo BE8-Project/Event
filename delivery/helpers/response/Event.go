@@ -20,6 +20,7 @@ type GetEvent struct {
 	Location   string `json:"location"`
 	Details    string `json:"details"`
 	Ticket     int    `json:"ticket"`
+	Price	   int    `json:"price"`
 	Image	   string `json:"image"`
 }
 

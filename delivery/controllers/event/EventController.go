@@ -71,6 +71,7 @@ func (c *eventController) Insert() echo.HandlerFunc {
 			Image:      img,
 			Details:    request.Details,
 			Ticket:     request.Ticket,
+			Price: 		request.Price,
 			CategoryID: request.CategoryID,
 			UserID:     user_id,
 		}
@@ -152,6 +153,7 @@ func (c *eventController) Update() echo.HandlerFunc {
 			Location:   request.Location,
 			Details:    request.Details,
 			Ticket:     request.Ticket,
+			Price: 		request.Price,
 			CategoryID: request.CategoryID,
 		}
 
