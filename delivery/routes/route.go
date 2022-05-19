@@ -3,6 +3,7 @@ package routes
 import (
 	"event/delivery/controllers/category"
 	"event/delivery/controllers/event"
+	"event/delivery/controllers/participant"
 	"event/delivery/controllers/user"
 	"event/delivery/middlewares"
 
@@ -35,4 +36,11 @@ func EventPath(e *echo.Echo, connect event.EventController) {
 	event.POST("", connect.Insert())
 	event.PUT("/:id", connect.Update())
 	event.DELETE("/:id", connect.Delete())
+}
+
+func ParticipantPath(e *echo.Echo, connect participant.ParticipantController) {
+	participant := e.Group("/events/orders", middlewares.Secret())
+	participant.POST("", connect.Insert())
+	participant.GET("/:order_id/status", connect.GetStatus())
+	participant.GET("/:order_id/cancel", connect.Cancel())
 }

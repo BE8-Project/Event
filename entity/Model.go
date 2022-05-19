@@ -34,4 +34,15 @@ type Event struct {
 	Ticket     int
 	UserID     uint
 	CategoryID uint
+	Participants []Participant `gorm:"foreingkey:EventID"`
+}
+
+type Participant struct {
+	gorm.Model
+	EventID	uint
+	UserID	uint
+	OrderID string
+	PaymentType	string
+	Total	int
+	Status string
 }
