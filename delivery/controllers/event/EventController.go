@@ -7,6 +7,7 @@ import (
 	"event/entity"
 	repository "event/repository/event"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -27,8 +28,10 @@ func NewEventController(repo repository.EventModel, valid *validator.Validate) *
 
 func (c *eventController) Insert() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		UserID := middlewares.ExtractTokenUserId(ctx)
+		user_id := uint(middlewares.ExtractTokenUserId(ctx))
 		var request request.InsertEvent
+		start, end := request.DateStart, request.DateEnd
+		layout := "2006-01-02T15:04"
 
 		if err := ctx.Bind(&request); err != nil {
 			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
@@ -38,14 +41,16 @@ func (c *eventController) Insert() echo.HandlerFunc {
 			return ctx.JSON(http.StatusBadRequest, response.StatusBadRequest(err))
 		}
 
-		layout := "2006-01-02T15:04"
-		strStart := request.DateStart
-		strEnd := request.DateEnd
-		convertStart, err := time.Parse(layout, strStart)
-		convertEnd, err := time.Parse(layout, strEnd)
+		convertStart, err := time.Parse(layout, start)
 
 		if err != nil {
-			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date salah"))
+			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date start salah"))
+		}
+
+		convertEnd, err := time.Parse(layout, end)
+
+		if err != nil {
+			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date end salah"))
 		}
 
 		event := entity.Event{
@@ -57,7 +62,7 @@ func (c *eventController) Insert() echo.HandlerFunc {
 			Details:    request.Details,
 			Ticket:     request.Ticket,
 			CategoryID: request.CategoryID,
-			UserID:     uint(UserID),
+			UserID:     user_id,
 		}
 
 		result := c.Connect.Insert(&event)
@@ -68,12 +73,102 @@ func (c *eventController) Insert() echo.HandlerFunc {
 
 func (c *eventController) GetAll() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		results := c.Connect.GetAll()
+		name := ctx.QueryParam("name")
+		location := ctx.QueryParam("location")
+		limit, _ := strconv.Atoi(ctx.QueryParam("limit"))
+		page, _ := strconv.Atoi(ctx.QueryParam("page"))
+
+		results := c.Connect.GetAll(name, location, limit, page)
 
 		if len(results) == 0 {
 			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
 		}
 		
-		return ctx.JSON(http.StatusCreated, response.StatusCreated("Berhasil mengambil semua Event!", results))
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil semua Event!", results))
+	}
+}
+
+func (c *eventController) Get() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		
+		result, err := c.Connect.Get(uint(id))
+		
+		if err != nil {
+			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
+		}
+
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil Event!", result))
+	}
+}
+
+func (c *eventController) Update() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		var event entity.Event
+		var request request.UpdateEvent
+		var requestStart, requestEnd time.Time
+		start, end := request.DateStart, request.DateEnd
+		user_id := uint(middlewares.ExtractTokenUserId(ctx))
+		id, _ := strconv.Atoi(ctx.Param("id"))
+		
+		if err := ctx.Bind(&request); err != nil {
+			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
+		}
+
+		if request.DateStart != "" && request.DateEnd != "" {
+			layout := "2006-01-02T15:04"
+			
+			convertStart, err := time.Parse(layout, start)
+
+			if err != nil {
+				return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date start salah"))
+			}
+
+			convertEnd, err := time.Parse(layout, end)
+
+			if err != nil {
+				return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("input date end salah"))
+			}
+
+			requestStart, requestEnd = convertStart, convertEnd
+		}
+
+		event = entity.Event{
+			Name:       request.Name,
+			HostedBy:   request.HostedBy,
+			DateStart:  requestStart,
+			DateEnd:    requestEnd,
+			Location:   request.Location,
+			Details:    request.Details,
+			Ticket:     request.Ticket,
+			CategoryID: request.CategoryID,
+		}
+
+		result, err := c.Connect.Update(uint(id), user_id, &event)
+		
+		if err != nil {
+			if err.Error() == "required" {
+				return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tidak ada field yang dimasukkan"))
+			} else {
+				return ctx.JSON(http.StatusForbidden, response.StatusForbidden(err.Error()))
+			}
+		}
+
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengupdate Event!", result))
+	}
+}
+
+func (c *eventController) Delete() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user_id := uint(middlewares.ExtractTokenUserId(ctx))
+		id, _ := strconv.Atoi(ctx.Param("id"))
+
+		result, err := c.Connect.Delete(uint(id), user_id)
+		
+		if err != nil {
+			return ctx.JSON(http.StatusForbidden, response.StatusForbidden(err.Error()))
+		}
+
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil menghapus Event!", result))
 	}
 }

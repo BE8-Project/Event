@@ -1,6 +1,10 @@
 package response
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type InsertEvent struct {
 	Name      string `json:"name"`
@@ -8,11 +12,22 @@ type InsertEvent struct {
 }
 
 type GetEvent struct {
-	Name       string `json:"name" validate:"required"`
-	HostedBy   string `json:"hosted_by" validate:"required"`
-	DateStart  time.Time `json:"date_start" validate:"required"`
-	DateEnd    time.Time `json:"date_end" validate:"required"`
-	Location   string `json:"location" validate:"required"`
-	Details    string `json:"details" validate:"required"`
-	Ticket     int    `json:"ticket" validate:"required"`
+	ID		   uint `json:"id"`
+	Name       string `json:"name"`
+	HostedBy   string `json:"hosted_by"`
+	DateStart  time.Time `json:"date_start"`
+	DateEnd    time.Time `json:"date_end"`
+	Location   string `json:"location"`
+	Details    string `json:"details"`
+	Ticket     int    `json:"ticket"`
+}
+
+type UpdateEvent struct {
+	Name      string `json:"name"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type DeleteEvent struct {
+	Name      string `json:"name"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }
