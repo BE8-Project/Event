@@ -23,5 +23,5 @@ type GetParticipant struct {
 	PaymentType string `json:"payment_type"`
 	Total       int `json:"total"`
 	Status      string `json:"status"`
-	Event 		[]GetEvent `json:"event"`
+	Event 		GetEvent `json:"event"`
 }
