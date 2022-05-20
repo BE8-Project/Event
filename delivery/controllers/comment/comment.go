@@ -70,11 +70,6 @@ func (cc *eventController) Delete() echo.HandlerFunc {
 func (cc *eventController) GetAll() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, _ := strconv.Atoi(c.Param("eventid"))
-		// var request request.Commentget
-
-		// if err := c.Bind(&request); err != nil {
-		// 	return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
-		// }
 
 		strg, err := cc.Connect.Get(uint(id))
 		if err != nil {

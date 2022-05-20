@@ -1,6 +1,7 @@
 package category
 
 import (
+	"errors"
 	"event/delivery/helpers/request"
 	"event/delivery/helpers/response"
 	"event/delivery/middlewares"
@@ -30,7 +31,7 @@ func (cc *categController) Insert() echo.HandlerFunc {
 
 		var request request.InsertCateg
 		if err := c.Bind(&request); err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest(""))
+			return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("data yg anda masukan salah"))
 		}
 
 		if err := cc.Validate.Struct(request); err != nil {
@@ -50,7 +51,7 @@ func (cc *categController) GetAll() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		strng, err := cc.Connect.Get()
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(err))
+			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(errors.New("data tidak ditemukan")))
 		}
 		return c.JSON(http.StatusOK, response.StatusOK("success get Category!", strng))
 	}
@@ -62,7 +63,7 @@ func (cc *categController) Delete() echo.HandlerFunc {
 
 		strng, err := cc.Connect.Delete(id_user, uint(id_Categ))
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(err))
+			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(errors.New("data tidak ditemukan")))
 		}
 		return c.JSON(http.StatusOK, response.StatusOK("success Delete", strng))
 	}
