@@ -45,3 +45,39 @@ func (m *participantModel) Update(order_id string, user_id uint, participant *en
 		}, nil
 	}
 }
+
+func (m *participantModel) GetByUser(user_id uint) []response.GetParticipant {
+	var tasks []entity.Participant
+	var event entity.Event
+	
+	m.DB.Where("user_id = ?", user_id).Find(&tasks)
+	m.DB.Where("id = ?", tasks[0].EventID).Find(&event)
+
+	var results []response.GetParticipant
+	for _, result := range tasks {
+		results = append(results, response.GetParticipant{
+			ID: result.ID,
+			EventID: result.EventID,
+			OrderID : result.OrderID,
+			PaymentType : result.PaymentType,
+			Total  : result.Total,
+			Status  : result.Status,
+			Event: []response.GetEvent{
+				{
+					ID: event.ID,
+					Name: event.Name,
+					HostedBy: event.HostedBy,
+					DateStart: event.DateStart,
+					DateEnd: event.DateEnd,
+					Location: event.Location,
+					Details: event.Details,
+					Ticket: event.Ticket,
+					Price: event.Price,
+					Image: event.Image,
+				},
+			},
+		})
+	}
+
+	return results
+}

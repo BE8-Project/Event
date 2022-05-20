@@ -142,3 +142,17 @@ func (c *participantController) Cancel() echo.HandlerFunc {
 		return ctx.JSON(http.StatusOK, response.StatusOK("success cancel Order!", result))
 	}
 }
+
+func (c *participantController) GetByUser() echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user_id := uint(middlewares.ExtractTokenUserId(ctx))
+
+		results := c.Connect.GetByUser(user_id)
+
+		if len(results) == 0 {
+			return ctx.JSON(http.StatusNotFound, response.StatusNotFound("Data tidak ditemukan!"))
+		}
+
+		return ctx.JSON(http.StatusOK, response.StatusOK("Berhasil mengambil myEvent!", results))
+	}
+}

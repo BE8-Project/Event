@@ -6,4 +6,5 @@ type ParticipantController interface {
 	Insert() echo.HandlerFunc
 	GetStatus() echo.HandlerFunc
 	Cancel() echo.HandlerFunc
+	GetByUser() echo.HandlerFunc
 }

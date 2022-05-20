@@ -50,6 +50,7 @@ func CommentPath(e *echo.Echo, connect comment.CommentContro) {
 func ParticipantPath(e *echo.Echo, connect participant.ParticipantController) {
 	participant := e.Group("/events/orders", middlewares.Secret())
 	participant.POST("", connect.Insert())
+	participant.GET("", connect.GetByUser())
 	participant.GET("/:order_id/status", connect.GetStatus())
 	participant.GET("/:order_id/cancel", connect.Cancel())
 }
