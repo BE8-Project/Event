@@ -27,14 +27,24 @@ func (m *CommentModel) Insert(comment *entity.Comment) (string, error) {
 }
 func (m *CommentModel) Delete(id uint, idUser uint) (string, error) {
 	var comment entity.Comment
-	if err := m.DB.Where("id = ? AND user_id = ?", id, idUser).First(&comment).Error; err != nil {
+	if err := m.DB.Where("id = ? AND user_id=?", id, idUser).First(&comment).Error; err != nil {
 		return "comment delete failed", err
 	}
-	record := m.DB.Where("id=?").Delete(&comment)
+	record := m.DB.Where("id=?", id).Delete(&comment)
 
 	if record.RowsAffected == 0 {
 		return "comment delete failed", record.Error
 	} else {
 		return "Comment success", nil
+	}
+}
+func (m *CommentModel) Get(id uint) ([]entity.Comment, error) {
+	var commentAll []entity.Comment
+	record := m.DB.Where("event_id = ?", id).Find(&commentAll).Error
+
+	if record != nil {
+		return []entity.Comment{}, record
+	} else {
+		return commentAll, nil
 	}
 }

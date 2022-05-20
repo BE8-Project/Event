@@ -40,6 +40,8 @@ func EventPath(e *echo.Echo, connect event.EventController) {
 	event.DELETE("/:id", connect.Delete())
 }
 func CommentPath(e *echo.Echo, connect comment.CommentContro) {
+	e.GET("comments/:eventid", connect.GetAll())
+
 	Comment := e.Group("/events/comments", middlewares.Secret())
 	Comment.POST("", connect.Insert())
 	Comment.DELETE("/:id", connect.Delete())
