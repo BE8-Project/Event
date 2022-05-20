@@ -6,15 +6,15 @@ Salah satu tugas kelompok untuk menyelesaikan course di Alterra Academy https://
 
 event API ini memiliki fitur sebagai berikut :
 
-1. `User` bisa membuat akun
+1. `User` bisa membuat akun, mengedit, dan menghapus
 2. `User` bisa login
-3. `Admin` yang akan membuat kategori untuk `User` yang akan membuat event
+3. `Admin` bisa membuat kategori untuk `User` yang akan membuat event
 4. `User` bisa membuat, mengedit, dan menghapus Event
 5. `User` bisa juga bisa mengikuti event yang dibuat oleh `Users` yang lain
 
 ## ERD
 
-https://drive.google.com/file/d/10Gbv-P1tqDp0lQkfIZrxk5NvowllZY4c/view
+https://drive.google.com/file/d/1sgx75q84CiIiYYhfGf9erhaROAvfVetw/view?usp=sharing
 
 ## OpenAPI
 
@@ -24,7 +24,7 @@ https://drive.google.com/file/d/10Gbv-P1tqDp0lQkfIZrxk5NvowllZY4c/view
 ## Contributing
 
 - Mahmuda Karima (DAKA) - https://github.com/BE8-Daka
-- Dwi Fajar Bachtiar - https://github.com/DwiBactiar12
+- M. Dwi Bachtiar Fajar - https://github.com/DwiBactiar12
 
 ## Copyrights
 

@@ -41,22 +41,16 @@ func TestRegister(t *testing.T) {
 		writer.WriteField("date_end", "2022-12-17T19:47")
 		writer.WriteField("location", "jakarta")
 		writer.WriteField("details", "presmian dunia digital")
-		ticket, _ := writer.CreateFormField("ticket")
-		ticket.Write([]byte("5"))
-
-		price, _ := writer.CreateFormField("price")
-		price.Write([]byte("10000"))
-		
-		category, _ := writer.CreateFormField("category_id")
-		category.Write([]byte("1"))
+		writer.WriteField("ticket", "5")
+		writer.WriteField("price", "50000")
+		writer.WriteField("category_id", "1")
 
 		part, _ := writer.CreateFormFile("file", "file.png")
-		part.Write([]byte(`example`))
+		part.Write([]byte("file"))
 		writer.Close()
 
 		req := httptest.NewRequest(http.MethodPost, "/", body)
 		req.Header.Set("Content-Type", writer.FormDataContentType())
-		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		req.Header.Set("Authorization", "Bearer "+token)
 
 		res := httptest.NewRecorder()
