@@ -1,6 +1,7 @@
 package comment
 
 import (
+	"errors"
 	"event/delivery/helpers/request"
 	"event/delivery/helpers/response"
 	"event/delivery/middlewares"
@@ -43,7 +44,7 @@ func (cc *eventController) Insert() echo.HandlerFunc {
 			Field:   request.Field,
 			EventID: request.EventID,
 		}
-		
+
 		strg, err := cc.Connect.Insert(&req)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(err))
@@ -56,13 +57,30 @@ func (cc *eventController) Insert() echo.HandlerFunc {
 func (cc *eventController) Delete() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user_id := uint(middlewares.ExtractTokenUserId(c))
-		id, _ := strconv.Atoi(c.Param("id"))
+		id_comment, _ := strconv.Atoi(c.Param("id"))
 
-		strg, err := cc.Connect.Delete(uint(id), user_id)
+		strg, err := cc.Connect.Delete(uint(id_comment), user_id)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(err))
 		}
 
 		return c.JSON(http.StatusOK, response.StatusOK("delete comment", strg))
+	}
+}
+func (cc *eventController) GetAll() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id, _ := strconv.Atoi(c.Param("eventid"))
+		// var request request.Commentget
+
+		// if err := c.Bind(&request); err != nil {
+		// 	return c.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
+		// }
+
+		strg, err := cc.Connect.Get(uint(id))
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, response.StatusBadRequestDuplicate(errors.New("error disini")))
+		}
+
+		return c.JSON(http.StatusOK, response.StatusOK("get comment", strg))
 	}
 }
