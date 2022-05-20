@@ -370,8 +370,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/inline_response_400"
 
-  /events/orders:
+  /events/orders/{order_id}/status:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Event Participation
       responses:
@@ -387,6 +389,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/inline_response_400"
+  /events/orders/{order_id}/cancel:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Event Participation
+      responses:
+        "200":
+          description: get all events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArrayOfEventSchema"
+        "400":
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/inline_response_400"
+  /events/orders:
     post:
       security:
         - bearerAuth: []

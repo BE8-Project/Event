@@ -3,6 +3,7 @@ package response
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -33,6 +34,27 @@ func StatusBadRequest(err error) map[string]interface{} {
 	}
 }
 
+func StatusBadRequestBind(err error) map[string]interface{} {
+	var field [] string
+	var message string
+	
+	for i, v := range strings.Fields(string(err.Error())) {
+		if i == 1 && v == "message=Syntax" {
+			message = "expected=string"
+		} else if i == 1 && v == "message=Unmarshal" {
+			message = "expected=string"
+		} else if i == 6 {
+			field = append(field, v)
+		}
+	}
+
+	return map[string]interface{}{
+		"code":    http.StatusBadRequest,
+		"message": field[0]+" "+message,
+		"data":    nil,
+	}
+}
+
 func StatusBadRequestDuplicate(err error) map[string]interface{} {
 	return map[string]interface{}{
 		"code":    http.StatusBadRequest,
@@ -40,6 +62,7 @@ func StatusBadRequestDuplicate(err error) map[string]interface{} {
 		"data":    nil,
 	}
 }
+
 func StatusBadRequestUpload(err error) map[string]interface{} {
 	return map[string]interface{}{
 		"code":    http.StatusBadRequest,

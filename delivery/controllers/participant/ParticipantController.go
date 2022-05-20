@@ -2,10 +2,10 @@ package participant
 
 import (
 	"event/config"
-	"event/delivery/usecase"
 	"event/delivery/helpers/request"
 	"event/delivery/helpers/response"
 	"event/delivery/middlewares"
+	"event/delivery/usecase"
 	"event/entity"
 	repoParticipant "event/repository/participant"
 	"net/http"
@@ -34,7 +34,7 @@ func (c *participantController) Insert() echo.HandlerFunc {
 		var request request.InsertParticipant
 
 		if err := ctx.Bind(&request); err != nil {
-			return ctx.JSON(http.StatusBadRequest, response.StatusInvalidRequest("tipe field ada yang salah"))
+			return ctx.JSON(http.StatusBadRequest, response.StatusBadRequestBind(err))
 		}
 
 		if err := c.Validate.Struct(request); err != nil {
